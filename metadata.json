@@ -1,0 +1,8 @@
+{
+  "name": "SnapGenAI",
+  "description": "A social camera web application inspired by Snapchat, featuring ephemeral messaging and Gemini AI-powered captions and chat.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

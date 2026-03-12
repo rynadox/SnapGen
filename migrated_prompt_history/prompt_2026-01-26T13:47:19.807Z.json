@@ -1,0 +1,207 @@
+[
+  {
+    "id": 0,
+    "author": "user",
+    "payload": {
+      "type": "text",
+      "text": "cree u ne application comme snapchat\n",
+      "files": [],
+      "fileUploads": [],
+      "cMarkNode": {}
+    },
+    "createdTimestamp": {
+      "seconds": 1769435126,
+      "nanos": 207000000
+    }
+  },
+  {
+    "id": 1,
+    "author": "model",
+    "payload": {
+      "type": "thinking",
+      "text": "**Defining the Objective**\n\nOkay, I'm starting by zeroing in on the user's main goal: building a Snapchat-like web application. I'm unpacking the implications, considering what features are key - camera, photo/video capture, and that crucial ephemeral aspect. It's a foundational step, making sure I fully grasp the intended application's core functionality.\n\n\n**Expanding the Core Features**\n\nI'm now zeroing in on defining the scope and minimal viable product for a browser-based Snapchat-like application. Thinking through key features, I've outlined the camera interface, gallery/memories, chat/friends functionality, and a stories feed. I've also begun brainstorming AI integration using Gemini, specifically AI-powered filters/captions and an AI chatbot within the app. I'm focusing on web-based implementation (PWA-like).\n\n\n**Outlining Key Structures**\n\nI'm now detailing the architectural structure, outlining key components like `CameraView`, `ChatList`, `StoriesView`, and the essential `BottomNav`. I'm also planning the data models, including Snap, Story, Message, and User, and defining mock data. I've begun to define the metadata for the application. Finally, I've got a framework for the Gemini service.\n\n\n**Defining AI and Components**\n\nI'm now zeroing in on integrating Google's GenAI, specifically `generateCaption` using `gemini-2.5-flash-image` and `chatWithAI` using `gemini-3-flash-preview`. I've also detailed the app state, defining `currentView`, `capturedImage`, and `isChatOpen`. I've outlined `CameraView` using a video element and canvas, and `SnapPreview` with caption and send features. Finally, I've got a preliminary `ChatList` which includes a Gemini-powered AI bot.\n\n\n**Focusing on Implementation**\n\nI'm now zeroing in on styling, specifically focusing on a dark mode design with yellow accents, full-height layouts with overflow handling, and rounded corners for a mobile-like feel, as well as refining the Gemini API integration guidelines with model selection, initialization and error handling. I'm also writing the code, using a mental sandbox for experimentation, and making adjustments like handling camera access errors and simplifying the UI flow.\n\n\n**Defining File Content**\n\nNow I'm focusing on defining the precise content for each file. I'm nailing down the structure of `metadata.json`, permissions are set. I'm incorporating the Tailwind script into `index.html`. In `types.ts`, `Chat`, `Message`, and `Snap` types are being defined. I've got the implementation of `analyzeImage` and `sendChatMessage` within `geminiService.ts`, and I'm fleshing out `Camera.tsx` and `Preview.tsx`, the core of the experience.\n\n\n",
+      "cMarkNode": {}
+    },
+    "createdTimestamp": {
+      "seconds": 1769435126,
+      "nanos": 207000000
+    },
+    "doneTimestamp": {
+      "seconds": 1769435149,
+      "nanos": 797000000
+    }
+  },
+  {
+    "id": 2,
+    "author": "model",
+    "payload": {
+      "type": "generationTable",
+      "entries": [
+        {
+          "path": "metadata.json",
+          "generationType": 0,
+          "isDone": true,
+          "description": "App metadata and permissions",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "{\n  \"name\": \"SnapGenAI\",\n  \"description\": \"A social camera web application inspired by Snapchat, featuring ephemeral messaging and Gemini AI-powered captions and chat.\",\n  \"requestFramePermissions\": [\n    \"camera\",\n    \"microphone\"\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "path": "index.html",
+          "generationType": 0,
+          "isDone": true,
+          "description": "Root HTML file with Tailwind CSS",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0\" />\n    <title>SnapGenAI</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      /* Hide scrollbar for Chrome, Safari and Opera */\n      .no-scrollbar::-webkit-scrollbar {\n        display: none;\n      }\n      /* Hide scrollbar for IE, Edge and Firefox */\n      .no-scrollbar {\n        -ms-overflow-style: none;  /* IE and Edge */\n        scrollbar-width: none;  /* Firefox */\n      }\n      body {\n        background-color: #000;\n        color: white;\n        overflow: hidden; /* App-like feel */\n      }\n    </style>\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>"
+            }
+          ]
+        },
+        {
+          "path": "index.tsx",
+          "generationType": 0,
+          "isDone": true,
+          "description": "React entry point",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nconst rootElement = document.getElementById('root');\nif (!rootElement) {\n  throw new Error(\"Could not find root element to mount to\");\n}\n\nconst root = ReactDOM.createRoot(rootElement);\nroot.render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);"
+            }
+          ]
+        },
+        {
+          "path": "types.ts",
+          "generationType": 0,
+          "isDone": true,
+          "description": "TypeScript definitions",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "export enum ViewState {\n  MAP = 'MAP',\n  CHAT = 'CHAT',\n  CAMERA = 'CAMERA',\n  STORIES = 'STORIES',\n  SPOTLIGHT = 'SPOTLIGHT'\n}\n\nexport interface User {\n  id: string;\n  name: string;\n  avatar: string;\n  streak?: number;\n  lastActive?: string;\n}\n\nexport interface Message {\n  id: string;\n  senderId: string;\n  text: string;\n  timestamp: Date;\n  isMe: boolean;\n  type: 'text' | 'image' | 'snap';\n  status: 'sent' | 'delivered' | 'read' | 'opened';\n}\n\nexport interface ChatSession {\n  id: string;\n  user: User;\n  messages: Message[];\n  lastMessage: string;\n  isUnread: boolean;\n}\n\nexport interface Story {\n  id: string;\n  user: User;\n  imageUrl: string;\n  timestamp: number;\n}\n"
+            }
+          ]
+        },
+        {
+          "path": "constants.ts",
+          "generationType": 0,
+          "isDone": true,
+          "description": "Global constants and mock data",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import { User, ChatSession, Message, Story } from './types';\n\nexport const CURRENT_USER_ID = 'me';\n\nexport const MOCK_USERS: User[] = [\n  { id: 'ai', name: 'My AI', avatar: 'https://picsum.photos/id/1/200/200', streak: 0 },\n  { id: 'u1', name: 'Sarah', avatar: 'https://picsum.photos/id/64/200/200', streak: 124, lastActive: '2m ago' },\n  { id: 'u2', name: 'David', avatar: 'https://picsum.photos/id/91/200/200', streak: 5, lastActive: '1h ago' },\n  { id: 'u3', name: 'Emma', avatar: 'https://picsum.photos/id/129/200/200', streak: 89, lastActive: 'Just now' },\n];\n\nexport const MOCK_CHATS: ChatSession[] = [\n  {\n    id: 'c1',\n    user: MOCK_USERS[0],\n    messages: [\n      { id: 'm1', senderId: 'ai', text: 'Bonjour ! Je suis ton assistant AI Gemini. Envoie-moi une photo ou un message !', timestamp: new Date(Date.now() - 3600000), isMe: false, type: 'text', status: 'read' }\n    ],\n    lastMessage: 'Tap to chat',\n    isUnread: false\n  },\n  {\n    id: 'c2',\n    user: MOCK_USERS[1],\n    messages: [],\n    lastMessage: 'New Snap • 2m',\n    isUnread: true\n  },\n  {\n    id: 'c3',\n    user: MOCK_USERS[2],\n    messages: [],\n    lastMessage: 'Opened • 1h',\n    isUnread: false\n  }\n];\n\nexport const MOCK_STORIES: Story[] = [\n  { id: 's1', user: MOCK_USERS[1], imageUrl: 'https://picsum.photos/400/800?random=1', timestamp: Date.now() - 100000 },\n  { id: 's2', user: MOCK_USERS[2], imageUrl: 'https://picsum.photos/400/800?random=2', timestamp: Date.now() - 500000 },\n  { id: 's3', user: MOCK_USERS[3], imageUrl: 'https://picsum.photos/400/800?random=3', timestamp: Date.now() - 900000 },\n];\n"
+            }
+          ]
+        },
+        {
+          "path": "services/geminiService.ts",
+          "generationType": 0,
+          "isDone": true,
+          "description": "Gemini API integration for image analysis and chat",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import { GoogleGenAI, GenerateContentResponse } from \"@google/genai\";\n\nconst getAiClient = () => {\n  const apiKey = process.env.API_KEY;\n  if (!apiKey) {\n    console.warn(\"API Key not found in process.env\");\n    return null;\n  }\n  return new GoogleGenAI({ apiKey });\n};\n\n// Generate a witty caption for a photo\nexport const generateSnapCaption = async (base64Image: string): Promise<string> => {\n  const ai = getAiClient();\n  if (!ai) return \"Cool Snap! (No API Key)\";\n\n  try {\n    // Clean base64 string if it contains metadata\n    const cleanBase64 = base64Image.split(',')[1] || base64Image;\n\n    const response: GenerateContentResponse = await ai.models.generateContent({\n      model: 'gemini-2.5-flash-image',\n      contents: {\n        parts: [\n          {\n            inlineData: {\n              mimeType: 'image/jpeg',\n              data: cleanBase64\n            }\n          },\n          {\n            text: \"Generate a short, funny, Gen-Z style caption for this Snapchat photo. Use emojis. Keep it under 10 words. Respond in French.\"\n          }\n        ]\n      }\n    });\n\n    return response.text || \"Just vibing ✨\";\n  } catch (error) {\n    console.error(\"Error generating caption:\", error);\n    return \"Error generating caption 🤖\";\n  }\n};\n\n// Chat with \"My AI\"\nexport const chatWithGemini = async (message: string, history: string[] = []): Promise<string> => {\n  const ai = getAiClient();\n  if (!ai) return \"I need an API key to talk! 🤐\";\n\n  try {\n    // For simplicity in this demo, we are doing a single turn generation, \n    // but in a real app you'd use chat.sendMessage with history.\n    const response: GenerateContentResponse = await ai.models.generateContent({\n      model: 'gemini-3-flash-preview',\n      contents: `You are a helpful and fun Snapchat AI assistant named \"My AI\". \n      Keep responses brief and conversational. Language: French.\n      User said: ${message}`\n    });\n\n    return response.text || \"Je ne sais pas quoi dire 🤷‍♂️\";\n  } catch (error) {\n    console.error(\"Error chatting:\", error);\n    return \"J'ai un petit problème de connexion 🔌\";\n  }\n};\n"
+            }
+          ]
+        },
+        {
+          "path": "components/BottomNav.tsx",
+          "generationType": 0,
+          "isDone": true,
+          "description": "Bottom navigation bar",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import React from 'react';\nimport { ViewState } from '../types';\nimport { Map, MessageSquare, Camera, Users, Play } from 'lucide-react';\n\ninterface BottomNavProps {\n  currentView: ViewState;\n  onChangeView: (view: ViewState) => void;\n  isBlackBackground?: boolean;\n}\n\nexport const BottomNav: React.FC<BottomNavProps> = ({ currentView, onChangeView, isBlackBackground }) => {\n  const getIconColor = (view: ViewState) => {\n    if (currentView === view) return isBlackBackground ? 'text-yellow-400' : 'text-green-500';\n    return isBlackBackground ? 'text-white' : 'text-gray-500';\n  };\n\n  const shadowClass = isBlackBackground \n    ? 'drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' \n    : '';\n\n  return (\n    <div className={`fixed bottom-0 w-full pb-6 pt-4 px-6 flex justify-between items-end z-50 ${isBlackBackground ? 'bg-gradient-to-t from-black/80 to-transparent' : 'bg-white border-t border-gray-100'}`}>\n      \n      <button onClick={() => onChangeView(ViewState.MAP)} className=\"flex flex-col items-center\">\n        <Map className={`w-7 h-7 ${getIconColor(ViewState.MAP)} ${shadowClass}`} strokeWidth={2.5} />\n      </button>\n\n      <button onClick={() => onChangeView(ViewState.CHAT)} className=\"flex flex-col items-center\">\n        <MessageSquare className={`w-7 h-7 ${getIconColor(ViewState.CHAT)} ${shadowClass}`} strokeWidth={2.5} />\n      </button>\n\n      <button onClick={() => onChangeView(ViewState.CAMERA)} className=\"flex flex-col items-center -mt-2\">\n         {/* Custom Camera Icon mimicking Snapchat's shutter UI when not selected, or just a prominent icon */}\n        <div className={`w-8 h-8 rounded-full border-2 ${currentView === ViewState.CAMERA ? 'border-yellow-400 bg-transparent' : (isBlackBackground ? 'border-white' : 'border-gray-400')} flex items-center justify-center`}>\n            <div className={`w-14 h-14 ${isBlackBackground ? 'bg-transparent' : 'bg-transparent'}`}></div>\n        </div>\n      </button>\n\n      <button onClick={() => onChangeView(ViewState.STORIES)} className=\"flex flex-col items-center\">\n        <Users className={`w-7 h-7 ${getIconColor(ViewState.STORIES)} ${shadowClass}`} strokeWidth={2.5} />\n      </button>\n\n      <button onClick={() => onChangeView(ViewState.SPOTLIGHT)} className=\"flex flex-col items-center\">\n        <Play className={`w-7 h-7 ${getIconColor(ViewState.SPOTLIGHT)} ${shadowClass}`} strokeWidth={2.5} />\n      </button>\n    </div>\n  );\n};\n"
+            }
+          ]
+        },
+        {
+          "path": "components/CameraView.tsx",
+          "generationType": 0,
+          "isDone": true,
+          "description": "Camera component with video feed and capture",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import React, { useRef, useEffect, useState } from 'react';\nimport { Camera, RefreshCw, Zap, Image as ImageIcon, Search } from 'lucide-react';\n\ninterface CameraViewProps {\n  onCapture: (imageSrc: string) => void;\n}\n\nexport const CameraView: React.FC<CameraViewProps> = ({ onCapture }) => {\n  const videoRef = useRef<HTMLVideoElement>(null);\n  const canvasRef = useRef<HTMLCanvasElement>(null);\n  const [stream, setStream] = useState<MediaStream | null>(null);\n  const [error, setError] = useState<string>('');\n  const [cameraFacingMode, setCameraFacingMode] = useState<'user' | 'environment'>('user');\n\n  useEffect(() => {\n    let currentStream: MediaStream | null = null;\n\n    const startCamera = async () => {\n      try {\n        if (currentStream) {\n          currentStream.getTracks().forEach(track => track.stop());\n        }\n        \n        const constraints = {\n          video: {\n            facingMode: cameraFacingMode,\n            width: { ideal: 1080 },\n            height: { ideal: 1920 }\n          },\n          audio: false\n        };\n        \n        const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);\n        currentStream = mediaStream;\n        setStream(mediaStream);\n        \n        if (videoRef.current) {\n          videoRef.current.srcObject = mediaStream;\n          videoRef.current.play();\n        }\n        setError('');\n      } catch (err) {\n        console.error(\"Error accessing camera:\", err);\n        setError(\"Camera access denied or unavailable.\");\n      }\n    };\n\n    startCamera();\n\n    return () => {\n      if (currentStream) {\n        currentStream.getTracks().forEach(track => track.stop());\n      }\n    };\n  }, [cameraFacingMode]);\n\n  const takePhoto = () => {\n    if (videoRef.current && canvasRef.current) {\n      const video = videoRef.current;\n      const canvas = canvasRef.current;\n      \n      canvas.width = video.videoWidth;\n      canvas.height = video.videoHeight;\n      \n      const context = canvas.getContext('2d');\n      if (context) {\n        // Horizontal flip if using front camera to mirror user\n        if (cameraFacingMode === 'user') {\n          context.translate(canvas.width, 0);\n          context.scale(-1, 1);\n        }\n        \n        context.drawImage(video, 0, 0, canvas.width, canvas.height);\n        const imageSrc = canvas.toDataURL('image/jpeg', 0.9);\n        onCapture(imageSrc);\n      }\n    }\n  };\n\n  const flipCamera = () => {\n    setCameraFacingMode(prev => prev === 'user' ? 'environment' : 'user');\n  };\n\n  return (\n    <div className=\"relative h-full w-full bg-black overflow-hidden rounded-b-xl\">\n      {error ? (\n        <div className=\"flex h-full items-center justify-center text-center p-6 bg-gray-900 text-white\">\n          <div>\n            <Camera className=\"w-12 h-12 mx-auto mb-4 text-gray-500\" />\n            <p>{error}</p>\n          </div>\n        </div>\n      ) : (\n        <video \n          ref={videoRef}\n          className={`absolute top-0 left-0 w-full h-full object-cover ${cameraFacingMode === 'user' ? 'scale-x-[-1]' : ''}`}\n          playsInline\n          autoPlay\n          muted\n        />\n      )}\n      \n      <canvas ref={canvasRef} className=\"hidden\" />\n\n      {/* Top Controls */}\n      <div className=\"absolute top-4 left-4 z-10 flex flex-col gap-6\">\n        <button className=\"bg-black/40 backdrop-blur-md p-2 rounded-full text-white\">\n            <Search className=\"w-6 h-6\" />\n        </button>\n      </div>\n\n      <div className=\"absolute top-4 right-4 z-10 flex flex-col gap-6\">\n        <button \n            onClick={flipCamera}\n            className=\"bg-black/40 backdrop-blur-md p-2 rounded-full text-white\">\n          <RefreshCw className=\"w-6 h-6\" />\n        </button>\n        <button className=\"bg-black/40 backdrop-blur-md p-2 rounded-full text-white\">\n          <Zap className=\"w-6 h-6\" />\n        </button>\n      </div>\n\n      {/* Camera Shutter */}\n      <div className=\"absolute bottom-24 w-full flex justify-center items-center z-20 px-10 gap-8\">\n        <button className=\"text-white opacity-80\">\n             <ImageIcon className=\"w-8 h-8\" />\n        </button>\n\n        <button \n          onClick={takePhoto}\n          className=\"w-20 h-20 rounded-full border-4 border-white bg-transparent hover:bg-white/20 active:scale-95 transition-all\"\n        />\n\n        <div className=\"w-8 h-8\"></div> {/* Spacer for balance */}\n      </div>\n    </div>\n  );\n};\n"
+            }
+          ]
+        },
+        {
+          "path": "components/SnapPreview.tsx",
+          "generationType": 0,
+          "isDone": true,
+          "description": "Previewing captured photo with AI caption abilities",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import React, { useState } from 'react';\nimport { X, Send, Sparkles, Download, Type } from 'lucide-react';\nimport { generateSnapCaption } from '../services/geminiService';\n\ninterface SnapPreviewProps {\n  imageSrc: string;\n  onClose: () => void;\n  onSend: () => void;\n}\n\nexport const SnapPreview: React.FC<SnapPreviewProps> = ({ imageSrc, onClose, onSend }) => {\n  const [caption, setCaption] = useState<string>('');\n  const [isGenerating, setIsGenerating] = useState(false);\n  const [showInput, setShowInput] = useState(false);\n\n  const handleAiCaption = async () => {\n    setIsGenerating(true);\n    const aiText = await generateSnapCaption(imageSrc);\n    setCaption(aiText);\n    setIsGenerating(false);\n    setShowInput(true);\n  };\n\n  return (\n    <div className=\"relative h-full w-full bg-black flex flex-col\">\n      {/* Top Bar */}\n      <div className=\"absolute top-4 left-4 z-50\">\n        <button onClick={onClose} className=\"p-2\">\n            <X className=\"w-8 h-8 text-white drop-shadow-md\" strokeWidth={3} />\n        </button>\n      </div>\n\n      {/* Main Image */}\n      <div className=\"relative flex-1 bg-black\">\n        <img src={imageSrc} alt=\"Snap\" className=\"w-full h-full object-cover\" />\n        \n        {/* Caption Overlay */}\n        {(showInput || caption) && (\n            <div \n                className=\"absolute top-1/2 left-0 w-full bg-black/60 px-4 py-3 flex items-center justify-center cursor-text\"\n                onClick={() => document.getElementById('caption-input')?.focus()}\n            >\n                <input \n                    id=\"caption-input\"\n                    type=\"text\" \n                    value={caption} \n                    onChange={(e) => setCaption(e.target.value)}\n                    className=\"w-full bg-transparent text-white text-center text-lg outline-none placeholder-gray-300\"\n                    placeholder=\"Add a caption...\"\n                    autoFocus\n                />\n            </div>\n        )}\n      </div>\n\n      {/* Side Tools */}\n      <div className=\"absolute top-10 right-4 flex flex-col gap-6 z-40\">\n        <button className=\"flex flex-col items-center gap-1\" onClick={() => setShowInput(!showInput)}>\n            <Type className=\"w-7 h-7 text-white drop-shadow-md\" />\n        </button>\n        <button className=\"flex flex-col items-center gap-1\">\n             <Download className=\"w-7 h-7 text-white drop-shadow-md\" />\n        </button>\n        <button \n            onClick={handleAiCaption}\n            className=\"flex flex-col items-center gap-1 animate-pulse\"\n            disabled={isGenerating}\n        >\n            <div className={`p-2 rounded-full ${isGenerating ? 'bg-yellow-400' : 'bg-transparent'}`}>\n                <Sparkles className={`w-7 h-7 text-white drop-shadow-md ${isGenerating ? 'animate-spin' : ''}`} />\n            </div>\n            <span className=\"text-white text-[10px] font-bold drop-shadow-md\">AI Fix</span>\n        </button>\n      </div>\n\n      {/* Bottom Send Bar */}\n      <div className=\"absolute bottom-4 right-4 z-50\">\n        <button \n            onClick={onSend}\n            className=\"bg-yellow-400 text-black font-bold py-3 px-6 rounded-full flex items-center gap-2 shadow-lg hover:scale-105 transition-transform\"\n        >\n            <span>Envoyer</span>\n            <Send className=\"w-5 h-5 -rotate-45 mb-1\" strokeWidth={3} />\n        </button>\n      </div>\n    </div>\n  );\n};\n"
+            }
+          ]
+        },
+        {
+          "path": "components/ChatList.tsx",
+          "generationType": 0,
+          "isDone": true,
+          "description": "List of chats",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import React from 'react';\nimport { ChatSession, User } from '../types';\nimport { MessageSquare, Camera, Search, UserPlus } from 'lucide-react';\nimport { MOCK_CHATS } from '../constants';\n\ninterface ChatListProps {\n  onSelectChat: (chat: ChatSession) => void;\n}\n\nexport const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {\n  return (\n    <div className=\"h-full bg-white text-black flex flex-col\">\n      {/* Header */}\n      <div className=\"flex justify-between items-center px-4 py-3 border-b border-gray-100 shadow-sm z-10 sticky top-0 bg-white\">\n        <div className=\"w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center\">\n            {/* Avatar Placeholder */}\n            <div className=\"w-full h-full overflow-hidden rounded-full\">\n                <img src=\"https://picsum.photos/id/65/200/200\" alt=\"Me\" />\n            </div>\n        </div>\n        <h1 className=\"text-xl font-bold font-sans\">Chat</h1>\n        <div className=\"flex gap-4\">\n             <UserPlus className=\"w-6 h-6 text-gray-600\" />\n             <MessageSquare className=\"w-6 h-6 text-gray-600\" />\n        </div>\n      </div>\n\n      {/* Search */}\n      <div className=\"px-4 py-2\">\n        <div className=\"bg-gray-100 rounded-full flex items-center px-4 py-2\">\n            <Search className=\"w-5 h-5 text-gray-500 mr-2\" />\n            <input type=\"text\" placeholder=\"Ami(e)s\" className=\"bg-transparent outline-none w-full font-medium placeholder-gray-500\" />\n        </div>\n      </div>\n\n      {/* List */}\n      <div className=\"flex-1 overflow-y-auto no-scrollbar\">\n        {MOCK_CHATS.map((chat) => (\n          <div \n            key={chat.id} \n            onClick={() => onSelectChat(chat)}\n            className=\"flex items-center px-4 py-3 active:bg-gray-50 transition-colors cursor-pointer border-b border-gray-50\"\n          >\n            {/* Avatar */}\n            <div className={`relative w-14 h-14 rounded-full p-[2px] ${chat.isUnread ? 'border-2 border-purple-500' : 'border border-transparent'}`}>\n                <img src={chat.user.avatar} alt={chat.user.name} className=\"w-full h-full rounded-full object-cover bg-gray-200\" />\n                {chat.user.streak && chat.user.streak > 0 && (\n                     <div className=\"absolute -bottom-1 -right-1 bg-white rounded-full text-xs px-1 shadow\">🔥 {chat.user.streak}</div>\n                )}\n            </div>\n\n            {/* Content */}\n            <div className=\"ml-3 flex-1\">\n                <h3 className=\"font-bold text-lg text-gray-900\">{chat.user.name}</h3>\n                <div className=\"flex items-center text-sm\">\n                    {chat.isUnread && <div className=\"w-3 h-3 bg-red-500 rounded-sm mr-2\"></div>}\n                    {!chat.isUnread && <div className=\"w-3 h-3 border border-red-500 rounded-sm mr-2\"></div>}\n                    <span className={`${chat.isUnread ? 'font-bold text-black' : 'text-gray-500'}`}>\n                        {chat.lastMessage}\n                    </span>\n                </div>\n            </div>\n\n            {/* Action */}\n            <div className=\"p-2 hover:bg-gray-100 rounded-full text-gray-400\">\n                <Camera className=\"w-6 h-6\" />\n            </div>\n          </div>\n        ))}\n      </div>\n    </div>\n  );\n};\n"
+            }
+          ]
+        },
+        {
+          "path": "components/ChatDetail.tsx",
+          "generationType": 0,
+          "isDone": true,
+          "description": "Active chat session with Gemini integration for My AI",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import React, { useState, useEffect, useRef } from 'react';\nimport { ChatSession, Message } from '../types';\nimport { ArrowLeft, Video, Phone, Smile, Camera, Image as ImageIcon, Mic } from 'lucide-react';\nimport { chatWithGemini } from '../services/geminiService';\nimport { CURRENT_USER_ID } from '../constants';\n\ninterface ChatDetailProps {\n  chat: ChatSession;\n  onBack: () => void;\n}\n\nexport const ChatDetail: React.FC<ChatDetailProps> = ({ chat, onBack }) => {\n  const [messages, setMessages] = useState<Message[]>(chat.messages);\n  const [inputText, setInputText] = useState('');\n  const [isTyping, setIsTyping] = useState(false);\n  const scrollRef = useRef<HTMLDivElement>(null);\n\n  const isAI = chat.user.id === 'ai';\n\n  useEffect(() => {\n    if (scrollRef.current) {\n      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;\n    }\n  }, [messages]);\n\n  const handleSend = async () => {\n    if (!inputText.trim()) return;\n\n    const newMessage: Message = {\n      id: Date.now().toString(),\n      senderId: CURRENT_USER_ID,\n      text: inputText,\n      timestamp: new Date(),\n      isMe: true,\n      type: 'text',\n      status: 'sent'\n    };\n\n    setMessages(prev => [...prev, newMessage]);\n    setInputText('');\n    \n    if (isAI) {\n      setIsTyping(true);\n      const reply = await chatWithGemini(newMessage.text);\n      setIsTyping(false);\n\n      const aiMessage: Message = {\n        id: (Date.now() + 1).toString(),\n        senderId: 'ai',\n        text: reply,\n        timestamp: new Date(),\n        isMe: false,\n        type: 'text',\n        status: 'read'\n      };\n      setMessages(prev => [...prev, aiMessage]);\n    }\n  };\n\n  return (\n    <div className=\"h-full bg-white flex flex-col absolute top-0 left-0 w-full z-50\">\n      {/* Header */}\n      <div className=\"flex items-center px-2 py-2 border-b border-gray-100 bg-white/90 backdrop-blur-md\">\n        <button onClick={onBack} className=\"p-2 hover:bg-gray-100 rounded-full\">\n            <ArrowLeft className=\"w-7 h-7 text-blue-500\" />\n        </button>\n        <div className=\"flex items-center flex-1 ml-1\">\n            <div className=\"w-10 h-10 rounded-full overflow-hidden mr-2 border border-gray-100\">\n                <img src={chat.user.avatar} alt=\"User\" className=\"w-full h-full object-cover\" />\n            </div>\n            <div className=\"flex flex-col\">\n                <span className=\"font-bold text-lg leading-tight\">{chat.user.name}</span>\n                <span className=\"text-xs text-gray-500\">\n                   {isTyping ? 'is typing...' : (isAI ? 'My AI' : 'Snapchat+')}\n                </span>\n            </div>\n        </div>\n        <div className=\"flex gap-1 bg-gray-100 rounded-full p-1\">\n            <button className=\"p-2 rounded-full hover:bg-gray-200\"><Phone className=\"w-5 h-5 text-black\" /></button>\n            <button className=\"p-2 rounded-full hover:bg-gray-200\"><Video className=\"w-5 h-5 text-black\" /></button>\n        </div>\n      </div>\n\n      {/* Messages */}\n      <div className=\"flex-1 overflow-y-auto p-4 bg-white\" ref={scrollRef}>\n        {messages.map((msg, idx) => {\n            const showAvatar = !msg.isMe && (idx === messages.length - 1 || messages[idx + 1]?.isMe);\n            return (\n                <div key={msg.id} className={`flex flex-col mb-2 ${msg.isMe ? 'items-end' : 'items-start'}`}>\n                     <div className=\"flex items-end max-w-[80%]\">\n                        {!msg.isMe && showAvatar && (\n                             <img src={chat.user.avatar} className=\"w-8 h-8 rounded-full mr-2 mb-1 border border-gray-200\" alt=\"avatar\" />\n                        )}\n                        {!msg.isMe && !showAvatar && <div className=\"w-10\"></div>}\n                        \n                        <div className={`py-2 px-4 text-base relative ${\n                            msg.isMe \n                            ? 'bg-blue-500 text-white rounded-l-2xl rounded-tr-2xl rounded-br-sm' \n                            : 'bg-gray-100 text-black rounded-r-2xl rounded-tl-2xl rounded-bl-sm border-l-2 border-red-500' /* Red line like snapchat */\n                        }`}>\n                            {msg.text}\n                        </div>\n                     </div>\n                </div>\n            );\n        })}\n        {isTyping && (\n             <div className=\"flex items-center ml-10 mt-2\">\n                 <div className=\"w-2 h-2 bg-gray-400 rounded-full animate-bounce mr-1\"></div>\n                 <div className=\"w-2 h-2 bg-gray-400 rounded-full animate-bounce mr-1 delay-75\"></div>\n                 <div className=\"w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150\"></div>\n             </div>\n        )}\n      </div>\n\n      {/* Input */}\n      <div className=\"px-3 py-3 border-t border-gray-100 flex items-center gap-2\">\n        <button className=\"p-2 bg-gray-100 rounded-full text-gray-600\">\n            <Camera className=\"w-6 h-6\" />\n        </button>\n        <div className=\"flex-1 bg-gray-100 rounded-full px-4 py-2 flex items-center\">\n            <input \n                type=\"text\" \n                placeholder=\"Chat\" \n                className=\"bg-transparent outline-none w-full text-lg\"\n                value={inputText}\n                onChange={(e) => setInputText(e.target.value)}\n                onKeyDown={(e) => e.key === 'Enter' && handleSend()}\n            />\n            <button className=\"ml-2 text-gray-500\"><Smile className=\"w-6 h-6\" /></button>\n        </div>\n        <button className=\"p-2 text-gray-500 hover:bg-gray-100 rounded-full\">\n            <Mic className=\"w-6 h-6\" />\n        </button>\n         <button className=\"p-2 text-gray-500 hover:bg-gray-100 rounded-full\">\n            <ImageIcon className=\"w-6 h-6\" />\n        </button>\n      </div>\n    </div>\n  );\n};\n"
+            }
+          ]
+        },
+        {
+          "path": "components/StoriesView.tsx",
+          "generationType": 0,
+          "isDone": true,
+          "description": "Stories feed",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import React from 'react';\nimport { MOCK_STORIES } from '../constants';\n\nexport const StoriesView: React.FC = () => {\n  return (\n    <div className=\"h-full bg-white text-black overflow-y-auto no-scrollbar\">\n       {/* Header */}\n       <div className=\"px-4 py-4 flex justify-between items-center sticky top-0 bg-white z-10\">\n            <h1 className=\"text-xl font-bold\">Stories</h1>\n            <div className=\"w-8 h-8 rounded-full bg-gray-200\">\n                 <img src=\"https://picsum.photos/id/65/200/200\" className=\"rounded-full w-full h-full\" alt=\"me\" />\n            </div>\n       </div>\n\n       {/* My Story */}\n       <div className=\"px-4 mb-6\">\n            <div className=\"font-bold text-sm text-gray-500 mb-2\">My Story</div>\n            <div className=\"flex items-center\">\n                <div className=\"w-16 h-16 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50\">\n                    <span className=\"text-2xl text-gray-400\">+</span>\n                </div>\n                <div className=\"ml-4\">\n                    <div className=\"font-bold\">Add to My Story</div>\n                    <div className=\"text-gray-500 text-sm\">Tap to add a Snap</div>\n                </div>\n            </div>\n       </div>\n\n       {/* Friends */}\n       <div className=\"px-4 mb-6\">\n            <div className=\"font-bold text-sm text-gray-500 mb-2\">Friends</div>\n            <div className=\"grid grid-cols-2 gap-4\">\n                {MOCK_STORIES.map(story => (\n                    <div key={story.id} className=\"relative aspect-[3/5] rounded-lg overflow-hidden border border-gray-100 shadow-sm cursor-pointer hover:opacity-90 transition-opacity\">\n                        <img src={story.imageUrl} alt=\"story\" className=\"w-full h-full object-cover\" />\n                        <div className=\"absolute top-3 left-3 w-8 h-8 rounded-full border-2 border-blue-500 p-[1px]\">\n                             <img src={story.user.avatar} className=\"w-full h-full rounded-full object-cover bg-white\" alt=\"avatar\" />\n                        </div>\n                        <div className=\"absolute bottom-0 left-0 w-full p-3 bg-gradient-to-t from-black/60 to-transparent text-white\">\n                            <div className=\"font-bold text-sm\">{story.user.name}</div>\n                        </div>\n                    </div>\n                ))}\n            </div>\n       </div>\n        \n       {/* Discover */}\n       <div className=\"px-4 mb-20\">\n            <div className=\"font-bold text-sm text-gray-500 mb-2\">Discover</div>\n             <div className=\"grid grid-cols-2 gap-4\">\n                 {[1,2,3,4].map(i => (\n                     <div key={i} className=\"relative aspect-[3/5] rounded-lg overflow-hidden shadow-sm\">\n                         <img src={`https://picsum.photos/400/600?random=${i+10}`} className=\"w-full h-full object-cover\" alt=\"discover\" />\n                         <div className=\"absolute bottom-3 left-3 font-bold text-white drop-shadow-md leading-tight text-sm\">\n                            Daily Vibes Ep. {i}\n                         </div>\n                     </div>\n                 ))}\n             </div>\n       </div>\n    </div>\n  );\n};\n"
+            }
+          ]
+        },
+        {
+          "path": "App.tsx",
+          "generationType": 0,
+          "isDone": true,
+          "description": "Main Application Layout",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import React, { useState } from 'react';\nimport { ViewState, ChatSession } from './types';\nimport { CameraView } from './components/CameraView';\nimport { ChatList } from './components/ChatList';\nimport { ChatDetail } from './components/ChatDetail';\nimport { StoriesView } from './components/StoriesView';\nimport { BottomNav } from './components/BottomNav';\nimport { SnapPreview } from './components/SnapPreview';\nimport { Users, Play } from 'lucide-react';\n\nconst App: React.FC = () => {\n  const [currentView, setCurrentView] = useState<ViewState>(ViewState.CAMERA);\n  const [capturedImage, setCapturedImage] = useState<string | null>(null);\n  const [activeChat, setActiveChat] = useState<ChatSession | null>(null);\n\n  // If in Chat View and a chat is selected, show detail\n  if (currentView === ViewState.CHAT && activeChat) {\n    return <ChatDetail chat={activeChat} onBack={() => setActiveChat(null)} />;\n  }\n\n  // If an image is captured, show the editing preview\n  if (capturedImage) {\n    return (\n      <SnapPreview \n        imageSrc={capturedImage} \n        onClose={() => setCapturedImage(null)} \n        onSend={() => {\n            alert(\"Snap Sent! 🚀\");\n            setCapturedImage(null);\n            setCurrentView(ViewState.CHAT);\n        }} \n      />\n    );\n  }\n\n  const renderContent = () => {\n    switch (currentView) {\n      case ViewState.MAP:\n        return (\n            <div className=\"h-full w-full bg-green-100 flex flex-col items-center justify-center text-green-800\">\n                <div className=\"text-6xl mb-4\">🌍</div>\n                <h2 className=\"font-bold text-xl\">Snap Map</h2>\n                <p className=\"opacity-60\">Coming soon</p>\n            </div>\n        );\n      case ViewState.CHAT:\n        return <ChatList onSelectChat={setActiveChat} />;\n      case ViewState.CAMERA:\n        return <CameraView onCapture={setCapturedImage} />;\n      case ViewState.STORIES:\n        return <StoriesView />;\n      case ViewState.SPOTLIGHT:\n         return (\n            <div className=\"h-full w-full bg-black flex flex-col items-center justify-center text-white relative\">\n                <img src=\"https://picsum.photos/500/900?grayscale\" className=\"absolute w-full h-full object-cover opacity-50\" alt=\"spotlight\" />\n                <div className=\"z-10 text-center\">\n                    <Play className=\"w-16 h-16 mx-auto mb-4\" fill=\"white\" />\n                    <h2 className=\"font-bold text-2xl\">Spotlight</h2>\n                </div>\n            </div>\n        );\n      default:\n        return null;\n    }\n  };\n\n  const isDarkBackground = currentView === ViewState.CAMERA || currentView === ViewState.SPOTLIGHT;\n\n  return (\n    <div className={`h-screen w-screen overflow-hidden flex flex-col ${isDarkBackground ? 'bg-black' : 'bg-white'}`}>\n      <main className=\"flex-1 relative overflow-hidden\">\n        {renderContent()}\n      </main>\n      \n      <BottomNav \n        currentView={currentView} \n        onChangeView={(view) => {\n            setCurrentView(view);\n            setActiveChat(null); // Reset detail view when changing tabs\n        }}\n        isBlackBackground={isDarkBackground}\n      />\n    </div>\n  );\n};\n\nexport default App;\n"
+            }
+          ]
+        }
+      ]
+    },
+    "createdTimestamp": {
+      "seconds": 1769435149,
+      "nanos": 798000000
+    },
+    "doneTimestamp": {
+      "seconds": 1769435151,
+      "nanos": 158000000
+    }
+  }
+]
